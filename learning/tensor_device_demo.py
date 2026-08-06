@@ -100,5 +100,13 @@ def main() -> None:
 
     print("Tensor 与设备练习运行完成。")
 
+
+    #作业
+    gray_images = torch.tensor(4, 1, 28, 28)
+    print(f"gray_images.ndim: {gray_images.ndim}")
+    print(f"gray_images.shape:{gray_images.shape}")
+    print(f"gray_image.dtype{images.dtype}")
+    print(f"gray_image.device{gray_images.device}")
+
 if __name__ == "__main__":
     main()
