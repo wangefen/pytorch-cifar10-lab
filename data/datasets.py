@@ -57,6 +57,7 @@ def create_data_loaders(
         val_indices,
     )
 
+    #DataLoader 按 batch_size 将 Dataset 组织成一个个 batch，供训练时逐批读取。
     train_loader = DataLoader(
         train_dataset,
         batch_size=batch_size,
