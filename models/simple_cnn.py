@@ -1,7 +1,4 @@
 import torch
-from pyexpat import features
-
-from mpmath.libmp import moebius
 from torch import nn
 
 class SimpleCNN(nn.Module):
@@ -16,6 +13,8 @@ class SimpleCNN(nn.Module):
         nn.MaxPool2d(2, 2),
         nn.Conv2d(32, 64, 3, 1, 1,bias = False),
         nn.BatchNorm2d(64),
+        nn.ReLU(inplace=True),
+        nn.MaxPool2d(2, 2),
         nn.Conv2d(64, 128, 3, 1, 1,bias = False),
         nn.BatchNorm2d(128),
         nn.ReLU(inplace=True),
