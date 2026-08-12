@@ -1,7 +1,6 @@
 import sys
 from pathlib import Path
 
-from utils import seed_everything
 import torch
 from torch import nn
 
@@ -15,6 +14,7 @@ from data import create_data_loaders
 from engine import train_one_epoch, evaluate
 from models import SimpleCNN
 from scripts.debug_single_batch import select_device
+from utils import seed_everything
 
 
 
@@ -22,7 +22,7 @@ def select_device() -> torch.device:
     if torch.cuda.is_available():
         return torch.device("cuda")
 
-    return torch.device("CPU")
+    return torch.device("cpu")
 
 
 def main() -> None:
