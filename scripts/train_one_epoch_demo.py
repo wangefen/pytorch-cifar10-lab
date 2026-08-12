@@ -11,7 +11,7 @@ sys.path.insert(
 )
 
 from data import create_data_loaders
-from engine import train_one_epoch
+from engine import train_one_epoch, evaluate
 from models import SimpleCNN
 from scripts.debug_single_batch import select_device
 
@@ -29,7 +29,7 @@ def main() -> None:
 
     device = select_device()
 
-    train_loader,_,_ = (
+    train_loader,val_loader,_ = (
         create_data_loaders(128, 0.1, 42)
     )
 
@@ -42,21 +42,41 @@ def main() -> None:
     print("开始训练一个 epoch...")
     print("-" * 50)
 
-    metrics = train_one_epoch(
+    train_metrics = train_one_epoch(
         model = model,
         data_loader=train_loader,
         criterion=criterion,
         optimizer=optimizer,
         device=device,
     )
+
+    val_metrics = evaluate(
+        model = model,
+        data_loader = val_loader,
+        criterion=criterion,
+        device=device,
+    )
     print("一个 epoch 训练完成：")
+    print("-" * 50)
+
     print(
         f"train_loss："
-        f"{metrics['loss']:.4f}"
+        f"{train_metrics['loss']:.4f}"
     )
+
     print(
         f"train_accuracy："
-        f"{metrics['accuracy']:.2f}%"
+        f"{train_metrics['accuracy']:.2f}%"
+    )
+
+    print(
+        f"val_loss："
+        f"{val_metrics['loss']:.4f}"
+    )
+
+    print(
+        f"val_accuracy："
+        f"{val_metrics['accuracy']:.2f}%"
     )
 
 if __name__ == "__main__":
