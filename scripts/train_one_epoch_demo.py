@@ -4,19 +4,20 @@ from pathlib import Path
 import torch
 from torch import nn
 
-from data import create_data_loaders
-from engine import train_one_epoch
-from models import SimpleCNN
-from scripts.debug_single_batch import select_device
-
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(
     0,
     str(PROJECT_ROOT),
 )
 
+from data import create_data_loaders
+from engine import train_one_epoch
+from models import SimpleCNN
+from scripts.debug_single_batch import select_device
 
-def selec_device() -> torch.device:
+
+
+def select_device() -> torch.device:
     if torch.cuda.is_available():
         return torch.device("cuda")
 
