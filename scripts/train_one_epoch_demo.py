@@ -1,6 +1,7 @@
 import sys
 from pathlib import Path
 
+from utils import seed_everything
 import torch
 from torch import nn
 
@@ -25,7 +26,11 @@ def select_device() -> torch.device:
 
 
 def main() -> None:
-    torch.manual_seed(42)
+    seed_everything(
+        seed=42,
+        deterministic=False,
+        cudnn_benchmark=True,
+    )
 
     device = select_device()
 
