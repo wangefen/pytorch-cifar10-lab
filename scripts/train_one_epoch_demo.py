@@ -14,8 +14,7 @@ from data import create_data_loaders
 from engine import train_one_epoch, evaluate
 from models import SimpleCNN
 from scripts.debug_single_batch import select_device
-from utils import seed_everything
-
+from utils import seed_everything, load_config
 
 
 def select_device() -> torch.device:
@@ -26,23 +25,34 @@ def select_device() -> torch.device:
 
 
 def main() -> None:
+    config = load_config("configs/simple_cnn.yaml")
     seed_everything(
-        seed=42,
-        deterministic=False,
-        cudnn_benchmark=True,
+        seed=config["runtime"]["seed"],
+        deterministic=config["runtime"]["deterministic"],
+        cudnn_benchmark=config["runtime"]["cudnn_benchmark"],
     )
 
     device = select_device()
 
     train_loader,val_loader,_ = (
-        create_data_loaders(128, 0.1, 42)
+        create_data_loaders(
+            batch_size = config["data"]["batch_size"],
+            val_ratio = config["data"]["val_ratio"],
+            seed = config["runtime"]["seed"],
+        )
     )
 
-    model = SimpleCNN(10).to(device)
+    model = SimpleCNN(
+        num_classes=config["model"]["num_classes"],
+    ).to(device)
 
     criterion = nn.CrossEntropyLoss()
 
-    optimizer = torch.optim.SGD(model.parameters(), lr=0.05, momentum=0.9)
+    optimizer = torch.optim.SGD(
+        model.parameters(),
+        lr=config["optimization"]["learning_rate"],
+        momentum=config["optimization"]["momentum"],
+    )
 
     print("开始训练一个 epoch...")
     print("-" * 50)

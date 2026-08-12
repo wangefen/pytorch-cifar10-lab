@@ -1,0 +1,15 @@
+runtime:
+  seed: 42
+  deterministic: false
+  cudnn_benchmark: true
+
+data:
+  batch_size: 128
+  val_ratio: 0.1
+
+model:
+  num_classes: 10
+
+optimization:
+  learning_rate: 0.05
+  momentum: 0.9
