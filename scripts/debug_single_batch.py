@@ -2,7 +2,6 @@ import sys
 from pathlib import Path
 
 import torch
-from jinja2.optimizer import optimize
 from torch import nn
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
@@ -80,8 +79,8 @@ def main() -> None:
                 f"accuracy={accuracy:.2f}%"
             )
 
-            print("-" * 50)
-            print("单 Batch 过拟合实验完成。")
+    print("-" * 50)
+    print("单 Batch 过拟合实验完成。")
 
 
 if __name__ == "__main__":
