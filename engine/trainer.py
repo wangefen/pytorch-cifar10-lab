@@ -92,10 +92,9 @@ def evaluate(
                 .item()
                 * 100
         )
+            loss_meter.update(value = loss.item(), n = batch_size)
 
-        loss_meter.update(value = loss.item(), n = batch_size)
-
-        accuracy_meter.update(value = accuracy, n=batch_size)
+            accuracy_meter.update(value = accuracy, n=batch_size)
 
     return {
         "loss": loss_meter.average,
