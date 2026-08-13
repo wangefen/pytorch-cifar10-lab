@@ -13,8 +13,12 @@ sys.path.insert(
 from data import create_data_loaders
 from engine import train_one_epoch, evaluate
 from models import SimpleCNN
-from scripts.debug_single_batch import select_device
-from utils import seed_everything, load_config
+from utils import (
+    CSVHistoryLogger,
+    create_logger,
+    load_config,
+    seed_everything,
+)
 
 
 def select_device() -> torch.device:
@@ -25,7 +29,43 @@ def select_device() -> torch.device:
 
 
 def main() -> None:
-    config = load_config("configs/simple_cnn.yaml")
+    config = load_config(PROJECT_ROOT /"configs/simple_cnn.yaml")
+
+    output_dir = (
+            PROJECT_ROOT
+            / config["project"]["output_dir"]
+            / config["project"]["run_name"]
+    )
+
+    log_path = (
+            output_dir
+            / "logs"
+            / "train.log"
+    )
+
+    history_path = (
+            output_dir
+            / "results"
+            / "history.csv"
+    )
+
+    logger = create_logger(
+        name="train",
+        log_path=log_path,
+    )
+
+    history_logger = CSVHistoryLogger(
+        path=history_path,
+        fieldnames=[
+            "epoch",
+            "train_loss",
+            "train_accuracy",
+            "val_loss",
+            "val_accuracy",
+        ],
+    )
+
+
     seed_everything(
         seed=config["runtime"]["seed"],
         deterministic=config["runtime"]["deterministic"],
@@ -57,42 +97,48 @@ def main() -> None:
     print("开始训练一个 epoch...")
     print("-" * 50)
 
-    train_metrics = train_one_epoch(
-        model = model,
-        data_loader=train_loader,
-        criterion=criterion,
-        optimizer=optimizer,
-        device=device,
-    )
+    epochs = config["optimization"]["epochs"]
 
-    val_metrics = evaluate(
-        model = model,
-        data_loader = val_loader,
-        criterion=criterion,
-        device=device,
-    )
-    print("一个 epoch 训练完成：")
-    print("-" * 50)
+    for epoch in range(1, epochs + 1):
+        train_metrics = train_one_epoch(
+            model = model,
+            data_loader=train_loader,
+            criterion=criterion,
+            optimizer=optimizer,
+            device=device,
+        )
 
-    print(
-        f"train_loss："
-        f"{train_metrics['loss']:.4f}"
-    )
+        val_metrics = evaluate(
+            model = model,
+            data_loader = val_loader,
+            criterion=criterion,
+            device=device,
+        )
 
-    print(
-        f"train_accuracy："
-        f"{train_metrics['accuracy']:.2f}%"
-    )
+        logger.info(
+            "Epoch %d/%d | "
+            "train_loss=%.4f | "
+            "train_acc=%.2f%% | "
+            "val_loss=%.4f | "
+            "val_acc=%.2f%%",
+            epoch,
+            epochs,
+            train_metrics["loss"],
+            train_metrics["accuracy"],
+            val_metrics["loss"],
+            val_metrics["accuracy"],
+        )
 
-    print(
-        f"val_loss："
-        f"{val_metrics['loss']:.4f}"
-    )
+        history_logger.write(
+            {
+                "epoch": epoch,
+                "train_loss": train_metrics["loss"],
+                "train_accuracy": train_metrics["accuracy"],
+                "val_loss": val_metrics["loss"],
+                "val_accuracy": val_metrics["accuracy"],
+            }
+        )
 
-    print(
-        f"val_accuracy："
-        f"{val_metrics['accuracy']:.2f}%"
-    )
 
 if __name__ == "__main__":
     main()

@@ -1,3 +1,7 @@
+project:
+  output_dir: outputs
+  run_name: simple_cnn_seed42
+
 runtime:
   seed: 42
   deterministic: false
@@ -13,3 +17,4 @@ model:
 optimization:
   learning_rate: 0.05
   momentum: 0.9
+  epochs: 3
